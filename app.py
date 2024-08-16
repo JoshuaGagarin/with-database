@@ -21,11 +21,13 @@ chat_data = (  #(data[0])
     "yo"
   ],
   "hello": [
+    "hola",
     "hello",
     "hola"
   ],
   "goodbye": [
     "bye",
+    "bye-okay",
     "goodbye",
     "byegood"
   ],
@@ -33,13 +35,6 @@ chat_data = (  #(data[0])
     "policy",
     "return",
     "policy-return"
-  ],
-  "return": [
-    "return",
-    "returning",
-    "item",
-    "refund",
-    "exchange"
   ],
   "store-hours": [
     "hours",
@@ -75,8 +70,10 @@ chat_data = (  #(data[0])
   ],
   "size-guide": [
     "sizing",
+    "sizing-where",
     "sizing-find",
     "size",
+    "size-where",
     "size-find",
     "sizes",
     "guide",
@@ -89,6 +86,18 @@ chat_data = (  #(data[0])
     "dimensions",
     "height",
     "width"
+  ],
+  "return": [
+    "damaged-items",
+    "replace-items",
+    "broken-items",
+    "damaged-item",
+    "replace-item",
+    "broken-item",
+    "return",
+    "returning",
+    "refund",
+    "exchange"
   ],
   "shipping-cost": [
     "much-delivery",
@@ -103,6 +112,7 @@ chat_data = (  #(data[0])
   "discount-codes": [
     "discount-available",
     "discount",
+    "discount-items",
     "discounts-available",
     "discounts",
     "codes",
@@ -119,16 +129,28 @@ chat_data = (  #(data[0])
     "sales",
     "sale-available",
     "sale",
+    "sale-items"
   ],
   "store-location": [
+    "where-store",
+    "find-store",
     "location",
+    "location-where",
+    "location-find",
     "location-store",
     "located",
     "located-store",
     "physical",
     "physical-store",
     "address",
-    "find"
+    "address-store",
+    "address-find",
+    "branch",
+    "branch-where",
+    "branch-find",
+    "branches", 
+    "branches-what",
+    "branches-where"
   ],
   "customer-support": [
     "contact",
@@ -145,16 +167,19 @@ chat_data = (  #(data[0])
     "thank",
     "thank-help",
     "thanks",
-    "thanks-help"
+    "thanks-help",
+    "you-thank-okay"
   ],
   "delivery": [
     "delivery",
     "delivery-available",
     "deliver",
+    "items-deliver",
     "deliver-available",
     "shipment",
     "transport",
     "ship",
+    "items-shift",
     "shipping",
     "shipping-available"
   ],
@@ -178,7 +203,8 @@ chat_data = (  #(data[0])
   "help": [
     "help",
     "help-hi",
-    "assist"
+    "assist",
+    "something-help"
   ],
   "bored": [
     "bored",
@@ -212,7 +238,11 @@ chat_data = (  #(data[0])
     "available-products",
     "available",
     "products"  
+  ],
+  "sorry": [
+    "where"
   ]
+
 }
 ) 
 
@@ -244,7 +274,8 @@ response_dict =  ( # (response[0])
   "sold-products": "We sell a wide range of fashionable clothing and accessories for men and women. Our collection includes trendy tops, stylish dresses, comfortable casual wear, elegant formal attire, and a variety of unique accessories such as bags, shoes, jewelry, and hats.",
   "shoes": "Yes, we do! We have a wide variety of shoes for men, women, and children.",
   "order-change": "If you need to change your order, please contact our customer service team as soon as possible. We'll do our best to accommodate your request if the order hasn't been processed yet.",
-  "create-account": "To create an account, click on the 'Sign Up' button at the top of our homepage and follow the instructions. You can also create an account during the checkout process."
+  "create-account": "To create an account, click on the 'Sign Up' button at the top of our homepage and follow the instructions. You can also create an account during the checkout process.",
+  "sorry" : "Sorry, I don't have much information about your query."
 }
 )
 
@@ -299,15 +330,11 @@ def botanswer(q):
     max_ = np.argmax(prob)
 
     if prob[max_] <= 0.6: #Only 60% and above accurate
-        response_list.append("Sorry, I don't have much information about your query...")
+        response_list.append("Sorry, I don't have much information about your query.")
         return "Sorry I am not getting you...!"
     else:
         response_list.append(response_dict[rnn.classes_[max_]])
         return response_dict[rnn.classes_[max_]]
-
-@app.route('/')
-def home():
-    return render_template('index.html',todos=chat_list, responses=response_list, zip=zip)
 
 @app.route('/add', methods=['POST'])
 def add_todo():
@@ -316,6 +343,12 @@ def add_todo():
         chat_list.append(task)
         botanswer(task)
     return jsonify({'status': 'success'})
+
+@app.route('/')
+def home():
+    return render_template('index.html',todos=chat_list, responses=response_list, zip=zip)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
